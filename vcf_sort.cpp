@@ -1,13 +1,11 @@
 /**
-  vcf_fuse.cpp
+  vcf_sort.cpp
 
-  Purpose: takes two VCF files which have the same event(s) in the same sequence, and merges/fuses them,
-  producing a VCF file that has the combined events sorted into the correct places.
-  Note that if an event occurs in both VCF files, it will also occur twice (two lines, right above each other)
-  in the resulting VCF.
+  Purpose: sorts a VCF file into the order chr1, chr2...chr22, chrX, chrY, chrM, as not
+  all VCF files have this format (some have a format like chr1, chr11, chr12...chr19, chr2...)
 
-  usage: ./fuse first_vcf second_vcf merged_vcf 
-  example: ./fuse pindel_del.vcf freebayes_del.vcf pindel_freebayes_merged_del.vcf
+  usage: ./sort original_vcf sorted_vcf 
+  example: ./sort pacbio_hanchild_orig.vcf pacbio_hanchild_sorted.vcf
 
   contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com
 **/
@@ -78,91 +76,59 @@ bool comesBefore(const std::string& firstLine, const std::string& secondLine) {
   return (posFirstEvent < posSecondEvent);
 }
 
-void transformFile(const std::string& nameOfFirstInputFile, const std::string& nameOfSecondInputFile, const std::string& nameOfOutputFile) {
-  std::ifstream firstInputFile(nameOfFirstInputFile.c_str());
-  std::ifstream secondInputFile(nameOfSecondInputFile.c_str());
+void transformFile(const std::string& nameOfInputFile, const std::string& nameOfOutputFile) {
+  std::ifstream inputFile(nameOfInputFile.c_str());
   std::ofstream outputFile(nameOfOutputFile.c_str());
-
-  std::string oldChrom = "";
-  std::string oldPos = "";
-
   std::vector<std::string> events;
 
-  while (!firstInputFile.eof()) {
+  while (!inputFile.eof()) {
     std::string line;
     std::stringstream buffer_ss;
-    getline(firstInputFile, line );
+    getline(inputFile, line );
     if (line.length() == 0) {
       break;
     }
 
-    // skip lines beginning with '#'
-    const char START_OF_COMMENT_CHAR = '#';
-    if (StringStartsWith(line,"##" )) {
-      outputFile << line << "\n";
-      continue;
-    } else if (StringStartsWith(line,"#")) { // "#CHROM
-      // use the #CHROM of the second file
-      continue;
-    } else {
-      events.push_back(line);
-      
-    }
-  }
-
-  while (!secondInputFile.eof()) {
-    std::string line;
-    std::stringstream buffer_ss;
-    getline(secondInputFile, line );
-    if (line.length() == 0) {
-      break;
-    }
-
-    // skip lines beginning with '#'
-    const char START_OF_COMMENT_CHAR = '#';
+    // lines beginning with '#' are comment lines which need to be copied in their original sequence
     if (StringStartsWith(line,"#" )) {
       outputFile << line << "\n";
       continue;
     } else {
       events.push_back(line);
     }
-  }
+  } // while not eof
+
   sort(events.begin(), events.end(), comesBefore);
   int numberOfEvents = events.size();
   for (int i = 0; i < events.size(); ++i) {
     outputFile << events[i] << std::endl;
   }
   
-  firstInputFile.close();
-  secondInputFile.close();
+  inputFile.close();
   outputFile.close();
 }
-
 
 int main(int argc, char** argv) {
   if (argc == 1) {
     std::cout <<
-      "fuse\n"
+      "sort\n"
       "\n"
-      "Purpose: takes two VCF files which have the same event(s) in the same sequence, and merges/fuses them, "
-      "producing a VCF file that has the combined events sorted into the correct places.\n"
-      "Note that if an event occurs in both VCF files, it will also occur twice (two lines, right above each other) "
-      "in the resulting VCF.\n"
+      "Purpose: sorts a VCF file into the order chr1, chr2...chr22, chrX, chrY, chrM, as not "
+      "all VCF files have this format (some have a format like chr1, chr11, chr12...chr19, chr2...)\n"
       "\n"
-      "usage: ./fuse first_vcf second_vcf merged_vcf\n"
-      "example: ./fuse pindel_del.vcf freebayes_del.vcf pindel_freebayes_merged_del.vcf\n"
+      "usage: ./sort original_vcf sorted_vcf \n"
+      "example: ./sort pacbio_hanchild_orig.vcf pacbio_hanchild_sorted.vcf\n"
       "\n"
       "contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
-  } else if (argc < 4) {
-    std::cout << "Invalid number of arguments. At least three arguments "
-        "are needed, the name of the first input file, the name of the second input file, and the name of the "
-        "output file.";
+  } else if (argc < 3) {
+    std::cout << "Invalid number of arguments. At least two arguments "
+        "are needed, the name of the input file and the name of the "
+        "output file.\n";
     return -1;
   } else {
-    std::string nameOfFirstInputFile = argv[1];
-    std::string nameOfSecondInputFile = argv[2];
-    std::string nameOfOutputFile = argv[3];
-    transformFile(nameOfFirstInputFile, nameOfSecondInputFile, nameOfOutputFile);
+    std::string nameOfInputFile = argv[1];
+    std::string nameOfOutputFile = argv[2];
+    transformFile(nameOfInputFile, nameOfOutputFile);
     return 0;
   }
 }
