@@ -3,6 +3,7 @@ find_duplicates
 find_mlma
 fuse
 indel_split
+left_align
 remove_double_alts
 remove_events
 remove_homref

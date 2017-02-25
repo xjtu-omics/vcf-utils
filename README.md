@@ -12,6 +12,8 @@
 
 **indel_split**: splits an indel file into an insertion file and a deletion file (only pure insertions and deletions, no replacements!)
 
+**left_align**: aligns the events in a VCF file to the left (not all pipelines produce left-aligned events)
+
 **remove_double_alts**: takes an input file (and output file), removes events containing GATK-like double alts (“A TA,TAA”) from the input file
 
 **remove_events**: takes an input file, a file that contains a list of events (like “chr1:10:A:AT” or “chr1:10”), removes all events that are in the list, and writes the result to a third file
@@ -28,5 +30,5 @@
 To compile/create the set of utilities, use
 ./runme
 
-Running any tool without arguments (for example ./remove_homref) shows its usgae instructions.
+Running any tool without arguments (for example "./remove_homref") shows its usage instructions.
 
