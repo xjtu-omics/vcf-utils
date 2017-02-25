@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
     "usage: ./indel_split input_vcf deletion_output_vcf insertion_output_vcf\n"
     "example: ./indel_split gatk_hanchild.vcf gatk_hanchild_deletions.vcf gatk_hanchild_insertions.vcf\n";
     "\n"
-    "contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n"
+    "contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
     return 0;
   }
   if (argc < 4) {
