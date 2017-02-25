@@ -1,3 +1,24 @@
+/**
+  vcf_size_assessor.cpp
+
+  Purpose: returns a table summarizing the occurence of events of certain
+  sizes in a VCF file. Its output is like
+  
+  Size    Count   Caller  SvType
+  1       107774  Pindel  deletion
+  2       36753   Pindel  deletion
+  3       14359   Pindel  deletion
+  ...     ...     ...     ... 
+
+  Note that it should only be used on a file that contains only one type
+  of event (insertion or deletion)
+
+  Usage: ./size_ass input_vcf output_txt name_of_caller name_of_sv_type
+  Example: ./size_ass pindel_hanchild_del.vcf pindel_hanchild_del_sizes.txt Pindel deletion
+
+  Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com
+**/
+
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -54,7 +75,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     // skip lines beginning with '#'
     const char START_OF_COMMENT_CHAR = '#';
     if (line[0] == START_OF_COMMENT_CHAR ) {
-      //outputFile << line << "\n";
       continue;
     }
 
@@ -74,7 +94,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
        std::cout << chrom << ":" << pos << std::endl;
     }
     oldChrom = chrom;
-    oldPos = pos;
 
     for (int i = 0; i < 1; i++ ) {
        buffer_ss >> dummy;
@@ -88,18 +107,7 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
       std::cout << "Ref: " << ref << " alt " << alt << "\n";
       continue;
     }
-    for (int i = 0; i < 4; i++ ) {
-       buffer_ss >> dummy;
-    }
-
-    std::string genotype;
-    buffer_ss >> genotype;
     
-    /*if (StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,".")) {
-      std::cout << genotype << "\n";
-    } else {
-      outputFile << line << "\n";
-    }*/
     int size = getEventSize(ref,alt);
     std::cout << "Size: " << size << ", mapsize: " << sizeCounts.size() << std::endl;
     if (sizeCounts.count(size) == 0 ) {
@@ -107,15 +115,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     } else {
       ++sizeCounts[size];
     }
-    /*if (isInsertion(ref,alt)) {
-      //outputFile << line << "\n";
-    } else if (isDeletion(ref,alt)) {
-      
-      outputFile << line << "\n";
-    } else {
-      std::cout << "alarm: " << line << "\n";
-    }*/
-
   }     
   inputFile.close();
   outputFile << "Size\tCount\tCaller\tSvType" << std::endl;
@@ -127,8 +126,28 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
 
 
 int main(int argc, char** argv) {
-  //std::cout << "Converting the input VCF to output VCF";
-  if (argc < 5) {
+  if (argc == 1) {
+    std::cout << 
+      "size_ass\n"
+      "\n"
+      "Purpose: returns a table summarizing the occurence of events of certain "
+      "sizes in a VCF file. Its output is like\n"
+      "\n"
+      "Size    Count   Caller  SvType\n"
+      "1       107774  Pindel  deletion\n"
+      "2       36753   Pindel  deletion\n"
+      "3       14359   Pindel  deletion\n"
+      "...     ...     ...     ...\n"
+      "\n"
+      "Note that it should only be used on a file that contains only one type "
+      "of event (insertion or deletion).\n"
+      "\n"
+      "Usage: ./size_ass input_vcf output_txt name_of_caller name_of_sv_type\n"
+      "Example: ./size_ass pindel_hanchild_del.vcf pindel_hanchild_del_sizes.txt Pindel deletion\n"
+      "\n"
+      "Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
+    return -1;
+  } else if (argc < 5) {
     std::cout << "Invalid number of arguments. At least four arguments "
         "are needed, the name of the input file and the name of the "
         "output file, the name of the caller and the name of the SV type (like deletion).";

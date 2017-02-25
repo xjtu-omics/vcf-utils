@@ -1,0 +1,13 @@
+#!/bin/bash
+
+g++ vcf_filter_events.cpp -o filter_events
+g++ vcf_find_duplicates.cpp -o find_duplicates
+g++ vcf_find_mlma_events.cpp -o find_mlma
+g++ vcf_fuse.cpp -o fuse
+g++ vcf_indel_split.cpp -o indel_split
+g++ vcf_remove_double_alts.cpp -o remove_double_alts
+g++ vcf_remove_events.cpp -o remove_events
+g++ vcf_remove_homref.cpp -o remove_homref
+g++ vcf_size_assessor.cpp -o size_ass
+g++ vcf_sort.cpp -o sort
+

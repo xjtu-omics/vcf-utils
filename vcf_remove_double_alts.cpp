@@ -1,3 +1,19 @@
+/** 
+  vcf_remove_double_alts.cpp
+
+  Purpose: removes events that have more than one alternative allele, as indicated by 
+  comma-separation of alt alleles (for example "chr1 14053 A AT,AG"). This happens quite
+  frequently in files produced by GATK, even though the alt calls themselves are
+  (start of 2017) not necessarily very reliable from a Mendelian correctness point of view.
+  Practically, multi-alt-calls also complicate further downstream data processing and
+  analysis, so this tool can be used to remove them.
+ 
+  Usage: ./remove_double_alts input_vcf output_vcf
+  Example: ./remove_double_alts gatk_hanchild.vcf gatk_hanchild_wo_doublealts.vcf
+
+  Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com
+**/
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -26,9 +42,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
   std::ifstream inputFile(nameOfInputFile.c_str());
   std::ofstream outputFile(nameOfOutputFile.c_str());
 
-  std::string oldChrom = "";
-  std::string oldPos = "";
-
   while (!inputFile.eof()) {
     std::string line;
     std::stringstream buffer_ss;
@@ -46,56 +59,19 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
 
     buffer_ss << line;
     std::string dummy;
-    std::string chrom;
-    std::string pos;
-
-    buffer_ss >> chrom;
-    buffer_ss >> pos;
- 
-    if (chrom != oldChrom) {
-      std::cout << "Chromosome: " << chrom << std::endl;
-    }
     
-    if (chrom == oldChrom && pos == oldPos) {
-       std::cout << chrom << ":" << pos << std::endl;
-    }
-    oldChrom = chrom;
-    oldPos = pos;
-
-    for (int i = 0; i < 1; i++ ) {
-       buffer_ss >> dummy;
-    }
-    std::string ref;
-    buffer_ss >> ref;
-    std::string alt;
-    buffer_ss >> alt;
-
-    if (alt.find_first_of(',') != std::string::npos) {
-      std::cout << "Ref: " << ref << " alt " << alt << "\n";
-      continue;
-    }
     for (int i = 0; i < 4; i++ ) {
        buffer_ss >> dummy;
     }
 
-    std::string genotype;
-    buffer_ss >> genotype;
-    
-    outputFile << line << "\n";
+    std::string alt;
+    buffer_ss >> alt;
 
-    /*if (StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,".")) {
-      std::cout << genotype << "\n";
+    if (alt.find_first_of(',') != std::string::npos) {
+      std::cout << "Alt " << alt << "\n";
     } else {
-      
-    }*/
-    /*if (isInsertion(ref,alt)) {
-      //outputFile << line << "\n";
-    } else if (isDeletion(ref,alt)) {
       outputFile << line << "\n";
-    } else {
-      std::cout << "alarm: " << line << "\n";
-    }*/
-
+    }
   }     
   inputFile.close();
   outputFile.close();
@@ -103,7 +79,23 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
 
 
 int main(int argc, char** argv) {
-  //std::cout << "Converting the input VCF to output VCF";
+  if (argc == 1 ) {
+    std::cout <<
+      "remove_double_alts\n"
+      "\n"
+      "Purpose: removes events that have more than one alternative allele, as indicated by "
+      "comma-separation of alt alleles (for example \"chr1 14053 A AT,AG\"). This happens quite "
+      "frequently in files produced by GATK, even though the alt calls themselves are "
+      "(start of 2017) not necessarily very reliable from a Mendelian correctness point of view. "
+      "Practically, multi-alt-calls also complicate further downstream data processing and "
+      "analysis, so this tool can be used to remove them.\n"
+      "\n"
+      "Usage: ./remove_double_alts input_vcf output_vcf\n"
+      "Example: ./remove_double_alts gatk_hanchild.vcf gatk_hanchild_wo_doublealts.vcf\n"
+      "\n"
+      "Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
+    return -1;
+  }
   if (argc < 3) {
     std::cout << "Invalid number of arguments. At least two arguments "
         "are needed, the name of the input file and the name of the "
@@ -112,9 +104,7 @@ int main(int argc, char** argv) {
   } else {
     std::string nameOfInputFile = argv[1];
     std::string nameOfOutputFile = argv[2];
-    transformFile(nameOfInputFile, nameOfOutputFile);
-
-    	
+    transformFile(nameOfInputFile, nameOfOutputFile);   	
     return 0;
   }
 }

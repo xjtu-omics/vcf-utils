@@ -29,11 +29,11 @@ bool StringStartsWith(const std::string& stringToBeAssessed,
 }
 
 bool isInsertion(const std::string& ref, const std::string& alt) {
-  return ((ref.length() == 1) && (alt.length() > 1 ));
+  return ((ref.length() == 1) && (alt.length() > 1 ) && ref[0] == alt[0]);
 }
 
 bool isDeletion(const std::string& ref, const std::string& alt) {
-  return ((ref.length() > 1) && (alt.length() == 1 ));
+  return ((ref.length() > 1) && (alt.length() == 1 ) && ref[0] == alt[0]);
 }
 
 void transformFile(const std::string& nameOfInputFile, const std::string& nameOfDeletionOutputFile,
