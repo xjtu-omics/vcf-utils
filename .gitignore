@@ -1,9 +1,11 @@
+del_corr
 filter_events
 find_duplicates
 find_mlma
 fuse
 indel_split
 left_align
+read_reference
 remove_double_alts
 remove_events
 remove_homref
