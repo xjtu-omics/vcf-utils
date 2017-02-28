@@ -2,6 +2,7 @@
 
 g++ read_reference_fragment.cpp -o read_reference
 g++ vcf_aligner.cpp -o left_align
+g++ vcf_alt_unraveler.cpp -o unravel_alts
 g++ vcf_filter_events.cpp -o filter_events
 g++ vcf_find_duplicates.cpp -o find_duplicates
 g++ vcf_find_mlma_events.cpp -o find_mlma
@@ -13,4 +14,5 @@ g++ vcf_remove_events.cpp -o remove_events
 g++ vcf_remove_homref.cpp -o remove_homref
 g++ vcf_size_assessor.cpp -o size_ass
 g++ vcf_sort.cpp -o sort
+g++ vcf_standardizer.cpp -o standardize
 

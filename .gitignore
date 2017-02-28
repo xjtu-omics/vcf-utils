@@ -1,3 +1,4 @@
+*.cpp~
 del_corr
 filter_events
 find_duplicates
@@ -11,4 +12,6 @@ remove_events
 remove_homref
 size_ass
 sort
+standardize
+unravel_alts
 
