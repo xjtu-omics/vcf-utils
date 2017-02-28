@@ -28,7 +28,7 @@
 
 **sort**: sorts a VCF file into the sequence chr1, chr2...chr22, chrX, chrY, chrM
 
-**standardize**: basically helps transform a 'normal' PacBio file (with <INS> and <DEL> alt labels) into something with explicit REF and ALT fields. Note that if the file also has a weird format for deletions, it is better to use del_corr instead
+**standardize**: basically helps transform a 'normal' PacBio file (with &ltINS&gt and \<DEL\> alt labels) into something with explicit REF and ALT fields. Note that if the file also has a weird format for deletions, it is better to use del_corr instead
 
 **unravel_alts**: splits a mixed alt in a VCF file (like A AT,AGC) into separate lines. Can be useful when processing GATK VCF files.
 
