@@ -15,4 +15,5 @@ g++ vcf_remove_homref.cpp -o remove_homref
 g++ vcf_size_assessor.cpp -o size_ass
 g++ vcf_sort.cpp -o sort
 g++ vcf_standardizer.cpp -o standardize
+g++ vcf_uniquify.cpp -o uniquify
 

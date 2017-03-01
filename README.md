@@ -2,6 +2,8 @@
 
 ## tools
 
+**count_events**: tool to count the number of events (insertions, deletions, replacements, SNPs, whatever) in a VCF file
+
 **del_corr**: to be used for VCF files that have an uncommon deletion notation, like "chr1 10 AT C", which is weird since you would expect the alt of a deletion to be identical to the first base of the reference. If the basic problem is unconventional VCF-creating software, then del_corr may help to transform the deletions into the more generic format of "chr1 9 CA C"
 
 **filter_events**: takes an input file, a file that contains a list of events (like “chr1:10:A:AT”) and removes all events that are NOT in the list, and writes the result to a third file.
@@ -28,7 +30,9 @@
 
 **sort**: sorts a VCF file into the sequence chr1, chr2...chr22, chrX, chrY, chrM
 
-**standardize**: basically helps transform a 'normal' PacBio file (with &ltINS&gt and \<DEL\> alt labels) into something with explicit REF and ALT fields. Note that if the file also has a weird format for deletions, it is better to use del_corr instead
+**standardize**: basically helps transform a 'normal' PacBio file (with \<INS\> and \<DEL\> alt labels) into something with explicit REF and ALT fields. Note that if the file also has a weird format for deletions, it is better to use del_corr instead
+
+**uniquify**: If any event (chrom-pos-REF-ALT) occurs multiple times in a file (for example after merging VCF files), only keeps one copy of the event, ensuring that all events reported by the VCF-file are unique.
 
 **unravel_alts**: splits a mixed alt in a VCF file (like A AT,AGC) into separate lines. Can be useful when processing GATK VCF files.
 

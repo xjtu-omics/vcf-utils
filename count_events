@@ -1,0 +1,22 @@
+#!/bin/bash
+
+EXPECTED_ARGS=1
+
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "count_events"
+  echo
+  echo "Purpose: counts the number of events (insertions, deletions, SNPs, whatever) "
+  echo "in a VCF file (a simple 'wc' will give the total number of lines, but that "
+  echo "includes comments."
+  echo
+  echo "Usage: ./count_events vcf_file"
+  echo "Example: ./count_events gatk_hanchild.vcf"
+  echo
+  echo "Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com"
+  echo
+  exit -1
+fi
+
+grep -v '#' $1 | wc
+
