@@ -8,7 +8,7 @@ g++ vcf_find_duplicates.cpp -o find_duplicates
 g++ vcf_find_mlma_events.cpp -o find_mlma
 g++ vcf_fuse.cpp -o fuse
 g++ vcf_indel_split.cpp -o indel_split
-g++ vcf_min_bedmaker -o min_bedmaker
+g++ vcf_min_bedmaker.cpp -o min_bedmaker
 g++ vcf_pacbio_delcorrector.cpp -o del_corr
 g++ vcf_remove_double_alts.cpp -o remove_double_alts
 g++ vcf_remove_events.cpp -o remove_events
