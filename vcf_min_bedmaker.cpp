@@ -2,7 +2,9 @@
   vcf_min_bedmaker.cpp
 
   Purpose: makes a BED-file from a VCF, taking as the coordinates of each BED line
-  the start coordinate of the event and the startposition + eventsize.
+  the start coordinate of the event (minus one, as BED defines the first base
+  of a chromosome as base 0, VCF defines the first base as base 1) 
+  and the startposition + eventsize.
   Note that these assumptions can be problematic: it does not take into account that
   in repetitive regions an indel can be on many loci, and even the slightest error in
   reference or read can shift it greatly, or that an insertion should actually have
@@ -83,7 +85,7 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::string alt;
     buffer_ss >> alt;
 
-    outputFile << chrom << "\t" << pos << "\t" << pos + eventLength(ref,alt) + 1 << std::endl;
+    outputFile << chrom << "\t" << pos-1 << "\t" << pos + eventLength(ref,alt)  << std::endl;
   }     
   inputFile.close();
   outputFile.close();
@@ -96,7 +98,9 @@ int main(int argc, char** argv) {
     "min_bedmaker\n"
     "\n"
     "Purpose: makes a BED-file from a VCF, taking as the coordinates of each BED line "
-    "the start coordinate of the event and the startposition + eventsize.\n"
+    "the start coordinate of the event (minus one, as BED defines the first base "
+    "of a chromosome as base 0, VCF defines the first base as base 1) "
+    "and the startposition + eventsize."
     "Note that these assumptions can be problematic: it does not take into account that "
     "in repetitive regions an indel can be on many loci, and even the slightest error in "
     "reference or read can shift it greatly, or that an insertion should actually have "
