@@ -6,6 +6,7 @@ find_mlma
 fuse
 indel_split
 left_align
+min_bedmaker
 read_reference
 remove_double_alts
 remove_events
@@ -14,4 +15,6 @@ size_ass
 sort
 standardize
 unravel_alts
+uniquify
+uniquify_loci
 

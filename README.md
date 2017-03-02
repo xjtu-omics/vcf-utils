@@ -18,6 +18,8 @@
 
 **left_align**: aligns the events in a VCF file to the left (not all pipelines produce left-aligned events)
 
+**min_bedmaker**: Turns a VCF file into a BED file, defining the start of each interval as the start position in the VCF, and the end as the start position + the event length (1 for SNPs, 2 for 1-base indels, etc)
+
 **read_reference**: not strictly something that manipulates a VCF, this is a quick tool to check the sequence of the reference genome at a certain position, useful for finding the context of an event in the VCF
 
 **remove_double_alts**: takes an input file (and output file), removes events containing GATK-like double alts (“A TA,TAA”) from the input file
@@ -33,6 +35,8 @@
 **standardize**: basically helps transform a 'normal' PacBio file (with \<INS\> and \<DEL\> alt labels) into something with explicit REF and ALT fields. Note that if the file also has a weird format for deletions, it is better to use del_corr instead
 
 **uniquify**: If any event (chrom-pos-REF-ALT) occurs multiple times in a file (for example after merging VCF files), only keeps one copy of the event, ensuring that all events reported by the VCF-file are unique.
+
+**uniquify_loci**: If any locus (chrom-pos) occurs in multiple events in the VCF, only keep the first event at the locus. Note that this will eliminate more events than the similar utility 'uniquify'.
 
 **unravel_alts**: splits a mixed alt in a VCF file (like A AT,AGC) into separate lines. Can be useful when processing GATK VCF files.
 

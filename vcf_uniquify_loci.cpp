@@ -1,13 +1,13 @@
 /**
-  vcf_uniquify.cpp
+  vcf_uniquify_loci.cpp
 
-  Purpose: finds all duplicate events (same chromosome, position, ref and alt) and removes extraneous duplicates,
-  leaving only one event with those data in the file (so "chr1 10 AT T Caller=Pindel ... chr1 10 AT T Caller=Delly ... 
+  Purpose: finds all events that share a locus (same chromosome and position) and removes all of those events except
+  the first one, leaving only one event with those data in the file (so "chr1 10 AT A Caller=Pindel ... chr1 10 A AGGCGGC Caller=Delly ... 
   chr1 10 AT T Caller=GATK ...chr1 17 G GCC Caller=GATK" 
   becomes "chr1 10 AT T Caller=Pindel ... chr1 17 G GCC Caller=GATK"
 
-  usage: ./uniquify input_vcf output_vcf
-  example: ./uniquify pacbio_hanchild.vcf pacbio_hanchild_unique_events.vcf
+  usage: ./uniquify_loci input_vcf output_vcf
+  example: ./uniquify_loci pacbio_hanchild.vcf pacbio_hanchild_unique_loci.vcf
 
   contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com
 **/
@@ -42,8 +42,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
 
   std::string oldChrom = "";
   std::string oldPos = "";
-  std::string oldRef = "";
-  std::string oldAlt = "";
 
   while (!inputFile.eof()) {
     std::string line;
@@ -66,23 +64,15 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     buffer_ss >> chrom;
     std::string pos;
     buffer_ss >> pos;
-    std::string dummy;
-    buffer_ss >> dummy;
-    std::string ref;
-    buffer_ss >> ref;
-    std::string alt;
-    buffer_ss >> alt;
 
-    if (chrom == oldChrom && pos == oldPos && ref == oldRef && alt == oldAlt) {
-       std::cout << chrom << ":" << pos << ":" << ref << ":" << alt << std::endl;
+    if (chrom == oldChrom && pos == oldPos) {
+       std::cout << chrom << ":" << pos << std::endl;
     } else {
        outputFile << line << std::endl;
     }
 
     oldChrom = chrom;
     oldPos = pos;
-    oldRef = ref;
-    oldAlt = alt;
   }     
   inputFile.close();
   outputFile.close();
@@ -92,15 +82,15 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
 int main(int argc, char** argv) {
   
   if (argc < 3) { std::cout <<
-    "uniquify\n"
+    "uniquify_loci\n"
     "\n"
-    "Purpose: finds all duplicate events (same chromosome, position, ref and alt) and removes extraneous duplicates, "
-    "leaving only one event with those data in the file (so \"chr1 10 AT T Caller=Pindel ... chr1 10 AT T Caller=Delly ... "
+    "Purpose: finds all events that share a locus (same chromosome and position) and removes all of those events except "
+    "the first one, leaving only one event with those data in the file (so \"chr1 10 AT A Caller=Pindel ... chr1 10 A AGGCGGC Caller=Delly ... "
     "chr1 10 AT T Caller=GATK ...chr1 17 G GCC Caller=GATK\" " 
     "becomes \"chr1 10 AT T Caller=Pindel ... chr1 17 G GCC Caller=GATK\".\n"
     "\n"
-    "usage: ./uniquify input_vcf output_vcf\n"
-    "example: ./uniquify pacbio_hanchild.vcf pacbio_hanchild_unique_events.vcf\n"
+    "usage: ./uniquify_loci input_vcf output_vcf\n"
+    "example: ./uniquify_loci pacbio_hanchild.vcf pacbio_hanchild_unique_events.vcf\n"
     "\n"
     "contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
   } else {
