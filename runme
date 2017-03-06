@@ -6,6 +6,7 @@ g++ vcf_alt_unraveler.cpp -o unravel_alts
 g++ vcf_filter_events.cpp -o filter_events
 g++ vcf_find_duplicates.cpp -o find_duplicates
 g++ vcf_find_mlma_events.cpp -o find_mlma
+g++ vcf_find_uncrowded_events.cpp -o find_uncrowded
 g++ vcf_fuse.cpp -o fuse
 g++ vcf_indel_split.cpp -o indel_split
 g++ vcf_min_bedmaker.cpp -o min_bedmaker

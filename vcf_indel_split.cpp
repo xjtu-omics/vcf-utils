@@ -51,7 +51,7 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::stringstream buffer_ss;
     getline(inputFile, line );
     if (line.length() == 0) {
-      return;
+      break;
     }
 
     // skip lines beginning with '#'
@@ -99,11 +99,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::string genotype;
     buffer_ss >> genotype;
     
-    /*if (StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,".")) {
-      std::cout << genotype << "\n";
-    } else {
-      outputFile << line << "\n";
-    }*/
     if (isInsertion(ref,alt)) {
       insertionOutputFile << line << "\n";
     } else if (isDeletion(ref,alt)) {

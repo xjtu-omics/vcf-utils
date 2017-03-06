@@ -12,6 +12,8 @@
 
 **find_mlma**: takes an input file, and writes a list of 'duplicate loci' (so events that have same chromosome and position, but may have different alt (or ref!) alleles in “chr1:10” fomat). Useful for pindel output VCFs
 
+**find_uncrowded**: finds events that have no other events in a certain window around them, such as no other event within the 100 bases before and after the event. This can help eliminate events in repetitive regions, which are relatively likely to be inaccurate.
+
 **fuse**: fuses two VCF files that describe the same sample(s) (actually merges them)
 
 **indel_split**: splits an indel file into an insertion file and a deletion file (only pure insertions and deletions, no replacements!)

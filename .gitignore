@@ -3,6 +3,7 @@ del_corr
 filter_events
 find_duplicates
 find_mlma
+find_uncrowded
 fuse
 indel_split
 left_align

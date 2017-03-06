@@ -35,7 +35,6 @@ bool isDeletion(const std::string& ref, const std::string& alt) {
 
 void transformFile(const std::string& nameOfInputFile) {
   std::ifstream inputFile(nameOfInputFile.c_str());
-  //std::ofstream outputFile(nameOfOutputFile.c_str());
 
   std::string oldChrom = "";
   std::string oldPos = "";
@@ -47,7 +46,7 @@ void transformFile(const std::string& nameOfInputFile) {
     std::stringstream buffer_ss;
     getline(inputFile, line );
     if (line.length() == 0) {
-      return;
+      break;
     }
 
     // skip lines beginning with '#'
@@ -65,10 +64,6 @@ void transformFile(const std::string& nameOfInputFile) {
     buffer_ss >> chrom;
     buffer_ss >> pos;
  
-    if (chrom != oldChrom) {
-      //std::cout << "Chromosome: " << chrom << std::endl;
-    }
-
     for (int i = 0; i < 1; i++ ) {
        buffer_ss >> dummy;
     }
@@ -97,23 +92,8 @@ void transformFile(const std::string& nameOfInputFile) {
 
     std::string genotype;
     buffer_ss >> genotype;
-    
-    /*if (StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,".")) {
-      std::cout << genotype << "\n";
-    } else {
-      outputFile << line << "\n";
-    }*/
-    /*if (isInsertion(ref,alt)) {
-      //outputFile << line << "\n";
-    } else if (isDeletion(ref,alt)) {
-      outputFile << line << "\n";
-    } else {
-      std::cout << "alarm: " << line << "\n";
-    }*/
-
   }     
   inputFile.close();
-  //outputFile.close();
 }
 
 

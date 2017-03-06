@@ -47,7 +47,7 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::stringstream buffer_ss;
     getline(inputFile, line );
     if (line.length() == 0) {
-      return;
+      break;
     }
 
     // skip lines beginning with '#'

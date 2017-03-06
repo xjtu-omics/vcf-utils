@@ -48,7 +48,7 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::stringstream buffer_ss;
     getline(inputFile, line );
     if (line.length() == 0) {
-      return;
+      break;
     }
 
     // skip lines beginning with '#'
@@ -100,14 +100,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     } else {
       outputFile << line << "\n";
     }
-    /*if (isInsertion(ref,alt)) {
-      //outputFile << line << "\n";
-    } else if (isDeletion(ref,alt)) {
-      outputFile << line << "\n";
-    } else {
-      std::cout << "alarm: " << line << "\n";
-    }*/
-
   }     
   inputFile.close();
   outputFile.close();
