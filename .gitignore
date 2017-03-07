@@ -1,4 +1,5 @@
 *.cpp~
+compare
 del_corr
 filter_events
 find_duplicates

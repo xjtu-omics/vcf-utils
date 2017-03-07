@@ -2,6 +2,8 @@
 
 ## tools
 
+**compare**: finds all events in the first file that have a comparable event (same type and size, similar location) in the second file, and returns it as the output of a third file
+
 **count_events**: tool to count the number of events (insertions, deletions, replacements, SNPs, whatever) in a VCF file
 
 **del_corr**: to be used for VCF files that have an uncommon deletion notation, like "chr1 10 AT C", which is weird since you would expect the alt of a deletion to be identical to the first base of the reference. If the basic problem is unconventional VCF-creating software, then del_corr may help to transform the deletions into the more generic format of "chr1 9 CA C"

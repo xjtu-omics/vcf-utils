@@ -2,7 +2,8 @@
   vcf_filter_events.cpp
 
   Purpose: based on an existing VCF file, creates a new VCF file only containing those events that are given
-  in a list of events (of the format chromosome:position:ref:alt, like "chr1:10:A:AT")
+  in a list of events (of the format chromosome:position:ref:alt, like "chr1:10:A:AT", or of the format 
+  chromosome:position, like "chr1:10")
 
   usage: ./filter_events input_vcf event_list.txt output_vcf
   example: ./filter_events pindel_freebayes_merged_hanchild_del.vcf pfdel_shared_events.txt pindel_freebayes_merged_hanchild_shared_del.vcf
@@ -35,11 +36,16 @@ bool isDeletion(const std::string& ref, const std::string& alt) {
   return ((ref.length() > 1) && (alt.length() == 1 ));
 }
 
-void loadEvents(const std::string& nameOfFilterFile, std::set<std::string>& events) {
+void loadEvents(const std::string& nameOfFilterFile, std::set<std::string>& events, bool* extensive) {
   std::ifstream filterFile(nameOfFilterFile.c_str());
   std::string line;
+  *extensive = true; // assume 'chr1:12893123:A:AT"
   while (!filterFile.eof()) {
     getline(filterFile, line);
+    char lastChar = line[line.length()-1];
+    if (isdigit(lastChar)) {
+      *extensive = false;
+    }
     events.insert(line);
   }
 }
@@ -49,7 +55,8 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
   std::ifstream inputFile(nameOfInputFile.c_str());
   std::ofstream outputFile(nameOfOutputFile.c_str());
   std::set<std::string> events;
-  loadEvents(nameOfFilterFile, events);
+  bool extensiveFormat = false;
+  loadEvents(nameOfFilterFile, events, &extensiveFormat);
 
   while (!inputFile.eof()) {
     std::string line;
@@ -79,7 +86,10 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
     std::string alt;
     buffer_ss >> alt;
 
-    std::string positionCode = chrom + ":" + pos + ":" + ref + ":" + alt;
+    std::string positionCode = chrom + ":" + pos;
+    if (extensiveFormat) {
+       positionCode += ":" + ref + ":" + alt;
+    }
 
     if (events.find(positionCode) == events.end() ) {
       std::cout << "removed, as not found in the list of filtered events " << line << std::endl;
@@ -99,7 +109,8 @@ int main(int argc, char** argv) {
       "filter_events\n"
       "\n"
       "Purpose: based on an existing VCF file, creates a new VCF file only containing those events that are given "
-      "in a list of events (of the format \"chromosome:position:ref:alt\", like \"chr1:10:A:AT\").\n"
+      "in a list of events (of the format chromosome:position:ref:alt, like \"chr1:10:A:AT\", or of the format "
+      "chromosome:position, like \"chr1:10\").\n"
       "\n"
       "usage: ./filter_events input_vcf event_list.txt output_vcf\n"
       "example: ./filter_events pindel_freebayes_merged_hanchild_del.vcf pfdel_shared_events.txt pindel_freebayes_merged_hanchild_shared_del.vcf\n"
