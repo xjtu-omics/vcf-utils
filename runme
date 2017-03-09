@@ -4,11 +4,12 @@ g++ read_reference_fragment.cpp -o read_reference
 g++ vcf_aligner.cpp -o left_align
 g++ vcf_alt_unraveler.cpp -o unravel_alts
 g++ vcf_compare.cpp -o compare
+g++ vcf_eventizer.cpp -o eventizer
 g++ vcf_filter_events.cpp -o filter_events
 g++ vcf_find_duplicates.cpp -o find_duplicates
 g++ vcf_find_mlma_events.cpp -o find_mlma
 g++ vcf_find_uncrowded_events.cpp -o find_uncrowded
-g++ vcf_fuse.cpp -o fuse
+g++ vcf_fuse.cpp shared_functions.cpp event.cpp -o fuse
 g++ vcf_indel_split.cpp -o indel_split
 g++ vcf_min_bedmaker.cpp -o min_bedmaker
 g++ vcf_pacbio_delcorrector.cpp -o del_corr
@@ -16,7 +17,7 @@ g++ vcf_remove_double_alts.cpp -o remove_double_alts
 g++ vcf_remove_events.cpp -o remove_events
 g++ vcf_remove_homref.cpp -o remove_homref
 g++ vcf_size_assessor.cpp -o size_ass
-g++ vcf_sort.cpp -o sort
+g++ vcf_sort.cpp shared_functions.cpp event.cpp -o sort
 g++ vcf_standardizer.cpp -o standardize
 g++ vcf_uniquify.cpp -o uniquify
 g++ vcf_uniquify_loci.cpp -o uniquify_loci

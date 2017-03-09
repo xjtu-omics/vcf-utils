@@ -8,6 +8,8 @@
 
 **del_corr**: to be used for VCF files that have an uncommon deletion notation, like "chr1 10 AT C", which is weird since you would expect the alt of a deletion to be identical to the first base of the reference. If the basic problem is unconventional VCF-creating software, then del_corr may help to transform the deletions into the more generic format of "chr1 9 CA C"
 
+**eventizer**: takes an input VCF file, and produces an output text file that can be used for selecting or removing specific events or loci, for example as filter_events does.
+
 **filter_events**: takes an input file, a file that contains a list of events (like “chr1:10:A:AT”) and removes all events that are NOT in the list, and writes the result to a third file.
 
 **find_duplicates**: takes an input file, writes the list of duplicates to std::out in “chr1:10:A:AT” format

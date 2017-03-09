@@ -344,7 +344,7 @@ void transformFile(const std::string& nameOfComparedFile, const std::string& nam
     int minDistance = wiggleRoom;
     while (eventToSearch->getCoordinate().withinDistance(currentEvent.getCoordinate(), wiggleRoom)) {
       if (eventToSearch->getType() == currentEvent.getType() && 
-          eventToSearch->getSize() == currentEvent.getSize() &&
+          //eventToSearch->getSize() == currentEvent.getSize() &&
           eventToSearch->getCoordinate().getDistanceBetween(currentEvent.getCoordinate()) < minDistance
           ) {
          bestEventIt = eventToSearch;

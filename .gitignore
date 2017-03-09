@@ -1,6 +1,7 @@
 *.cpp~
 compare
 del_corr
+eventizer
 filter_events
 find_duplicates
 find_mlma

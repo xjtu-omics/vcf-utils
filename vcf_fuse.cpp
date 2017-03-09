@@ -17,66 +17,11 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 #include <string>
 #include <vector>
 
-/* Returns whether a string starts with a certain other string, so if
-   'stringToBeAssessed' is 'albert' and 'putativeStart' is 'al', this function
-   returns true. */
-bool StringStartsWith(const std::string& stringToBeAssessed,
-    const std::string& putativeStart) {
-  int subStringLength = putativeStart.length();
-  std::string startOfAssessableString =
-      stringToBeAssessed.substr(0,subStringLength);
-  return (startOfAssessableString.compare(putativeStart) == 0 );
-}
+#include "shared_functions.h"
 
-bool isInsertion(const std::string& ref, const std::string& alt) {
-  return ((ref.length() == 1) && (alt.length() > 1 ));
-}
-
-bool isDeletion(const std::string& ref, const std::string& alt) {
-  return ((ref.length() > 1) && (alt.length() == 1 ));
-}
-
-int extractChromNo(const std::string& line) {
-  std::stringstream ss;
-  ss << line;
-  std::string chromAsString;
-  ss >> chromAsString;
-  std::string chromIdPart = chromAsString.substr(3); // eliminate 'chr'
-  if (chromIdPart == "X") {
-    return 100;
-  } else if (chromIdPart == "Y") {
-    return 101;
-  } else if (chromIdPart == "M") {
-    return 102;
-  } else {
-    return atoi(chromIdPart.c_str());
-  }
-}
-
-int extractPos(const std::string& line) {
-  std::stringstream ss;
-  ss << line;
-  std::string chromAsString;
-  ss >> chromAsString;
-  int position;
-  ss >> position;
-  return position;
-}
-
-bool comesBefore(const std::string& firstLine, const std::string& secondLine) {
-  int chromNoFirstEvent = extractChromNo(firstLine);
-  int chromNoSecondEvent = extractChromNo(secondLine);
-  if (chromNoFirstEvent != chromNoSecondEvent) {
-    return (chromNoFirstEvent < chromNoSecondEvent);
-  }
-  int posFirstEvent = extractPos(firstLine);
-  int posSecondEvent = extractPos(secondLine);
-  return (posFirstEvent < posSecondEvent);
-}
 
 void transformFile(const std::string& nameOfFirstInputFile, const std::string& nameOfSecondInputFile, const std::string& nameOfOutputFile) {
   std::ifstream firstInputFile(nameOfFirstInputFile.c_str());
@@ -105,8 +50,7 @@ void transformFile(const std::string& nameOfFirstInputFile, const std::string& n
       // use the #CHROM of the second file
       continue;
     } else {
-      events.push_back(line);
-      
+      events.push_back(line);    
     }
   }
 
