@@ -1,6 +1,7 @@
 
 #include <cstdlib>
 #include <iostream> // debugging
+#include <sstream>
 
 #include "shared_functions.h"
 
@@ -37,4 +38,21 @@ bool comesBefore(const std::string& firstLine, const std::string& secondLine) {
   Event firstEvent(firstLine);
   Event secondEvent(secondLine);
   return (firstEvent < secondEvent);
+}
+
+std::string intToString(int i) {
+  std::stringstream ss;
+  ss << i;
+  std::string output;
+  ss >> output;
+  return output;
+}
+
+/** Utility function that halts/crashes the program, helps to catch bugs early.
+**/
+void Require(bool requirementMet, std::string errorMessage) {
+  if (!requirementMet) {
+    std::cerr << errorMessage << std::endl;
+    exit(-1);
+  }
 }

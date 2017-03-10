@@ -301,7 +301,7 @@ class Event {
 const std::string load(const std::string nameOfChromosome, std::ifstream& genomeFile, std::string& outputSequence);
 
 int main(int argc, char** argv) {
-  if (argc == 1) {
+  if (argc != 4) {
     std::cout << 
       "standardize\n"
       "\n"
@@ -314,13 +314,7 @@ int main(int argc, char** argv) {
       "\n"
       "contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
     return -1;
-  } else if (argc != 4) {
-    std::cout << "vcf_aligner error: three arguments are required," 
-      "the name of the input vcf file, the name of the reference (fasta) file, and " 
-      "the name of the output vcf file that is to be created.";
-    return -1;
-  }
-  
+  }   
   std::string nameOfInputVcf = argv[1];
   std::string nameOfReference = argv[2];
   std::string nameOfOutputVcf = argv[3];

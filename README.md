@@ -12,6 +12,8 @@
 
 **filter_events**: takes an input file, a file that contains a list of events (like “chr1:10:A:AT”) and removes all events that are NOT in the list, and writes the result to a third file.
 
+**filter_eventtypes**: takes an input VCF file and returns all events that are of a certain class (INS/DEL/SNP/ALL) and have certain minimum and maximum sizes.
+
 **find_duplicates**: takes an input file, writes the list of duplicates to std::out in “chr1:10:A:AT” format
 
 **find_mlma**: takes an input file, and writes a list of 'duplicate loci' (so events that have same chromosome and position, but may have different alt (or ref!) alleles in “chr1:10” fomat). Useful for pindel output VCFs

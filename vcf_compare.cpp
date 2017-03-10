@@ -2,10 +2,13 @@
   vcf_compare.cpp
 
   Purpose: finds all events in the first file that are represented by a similar event 
-  (similar location, same SV-length) in the second file.
+  (similar location, same or similar SV-length) in the second file. Additional arguments
+  indicate what difference in location is considered similar enough (or rather: which is
+  the minimum distance at which events are considered dissimilar), and whether one should
+  ignore SV lengths in the comparison ('same_len' or 'ignore_len') 
 
-  Usage: ./compare first_vcf second_vcf merged_vcf 
-  Example: ./compare pacbio_deletions.vcf freebayes_deletions.vcf pacbio_del_found_by_freebayes.vcf
+  Usage: ./compare first_vcf second_vcf wiggle_room_bp whether_compare_lengths merged_vcf
+  Example: ./compare pacbio_deletions.vcf freebayes_deletions.vcf 10 same_len pacbio_del_found_by_freebayes.vcf
 
   Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com
 **/
@@ -15,39 +18,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 #include <string>
 #include <vector>
 
+#include "shared_functions.h"
+
 enum EventType { INS, DEL, SNP, RPL };
-
-std::string intToString(int i) {
-  std::stringstream ss;
-  ss << i;
-  std::string output;
-  ss >> output;
-  return output;
-}
-
-/** Utility function that halts/crashes the program, helps to catch bugs early.
-**/
-void Require(bool requirementMet, std::string errorMessage) {
-  if (!requirementMet) {
-    std::cerr << errorMessage << std::endl;
-    exit(-1);
-  }
-}
-
-/* Returns whether a string starts with a certain other string, so if
-   'stringToBeAssessed' is 'albert' and 'putativeStart' is 'al', this function
-   returns true. */
-bool StringStartsWith(const std::string& stringToBeAssessed,
-    const std::string& putativeStart) {
-  int subStringLength = putativeStart.length();
-  std::string startOfAssessableString =
-      stringToBeAssessed.substr(0,subStringLength);
-  return (startOfAssessableString.compare(putativeStart) == 0 );
-}
 
 bool isInsertion(const std::string& ref, const std::string& alt) {
   return ((ref.length() == 1) && (alt.length() > 1 ));
@@ -57,67 +33,12 @@ bool isDeletion(const std::string& ref, const std::string& alt) {
   return ((ref.length() > 1) && (alt.length() == 1 ));
 }
 
-bool isPure(const std::string& ref, const std::string& alt) {
-  return (ref[0] == alt[0]);
-}
-
 bool isPureInsertion(const std::string& ref, const std::string& alt) {
-  return (isInsertion(ref,alt) && isPure(ref,alt));
+  return (isInsertion(ref,alt) && ref[0] == alt[0]);
 }
 
 bool isPureDeletion(const std::string& ref, const std::string& alt) {
-  return (isDeletion(ref,alt) && isPure(ref,alt));
-}
-
-int extractChromNo(const std::string& line) {
-  std::stringstream ss;
-  ss << line;
-  std::string chromAsString;
-  ss >> chromAsString;
-  std::string chromIdPart = chromAsString.substr(3); // eliminate 'chr'
-  if (chromIdPart == "X") {
-    return 100;
-  } else if (chromIdPart == "Y") {
-    return 101;
-  } else if (chromIdPart == "M") {
-    return 102;
-  } else {
-    return atoi(chromIdPart.c_str());
-  }
-}
-
-int chromNameToNumber(const std::string& chromNameAsString) {
-  std::string chromIdPart = chromNameAsString.substr(3); // eliminate 'chr'
-  if (chromIdPart == "X") {
-    return 100;
-  } else if (chromIdPart == "Y") {
-    return 101;
-  } else if (chromIdPart == "M") {
-    return 102;
-  } else {
-    return atoi(chromIdPart.c_str());
-  }
-}
-
-int extractPos(const std::string& line) {
-  std::stringstream ss;
-  ss << line;
-  std::string chromAsString;
-  ss >> chromAsString;
-  int position;
-  ss >> position;
-  return position;
-}
-
-bool comesBefore(const std::string& firstLine, const std::string& secondLine) {
-  int chromNoFirstEvent = extractChromNo(firstLine);
-  int chromNoSecondEvent = extractChromNo(secondLine);
-  if (chromNoFirstEvent != chromNoSecondEvent) {
-    return (chromNoFirstEvent < chromNoSecondEvent);
-  }
-  int posFirstEvent = extractPos(firstLine);
-  int posSecondEvent = extractPos(secondLine);
-  return (posFirstEvent < posSecondEvent);
+  return (isDeletion(ref,alt) && ref[0] == alt[0]);
 }
 
 class Coordinate {
@@ -147,7 +68,7 @@ Coordinate::Coordinate() :
 }
 
 Coordinate::Coordinate(const std::string& chromosomeName, int position) : 
-  m_chromosomeIndex(chromNameToNumber(chromosomeName)), m_position(position) {
+  m_chromosomeIndex(chromosomeNameToIndex(chromosomeName)), m_position(position) {
 }
 
 Coordinate::Coordinate(int chromosomeIndex, int position) : 
@@ -289,8 +210,21 @@ std::ostream& operator<<(std::ostream& os, const Event& event) {
   return os;
 }
 
-void transformFile(const std::string& nameOfComparedFile, const std::string& nameOfComparisonFile, int wiggleRoom,
-  const std::string& nameOfOutputFile) {
+bool sufficientlySimilar(const Event& currentEvent, const Event& soughtEvent, 
+    int differenceDefiningDistance, bool requireSameSize) {
+  if (currentEvent.getType() != soughtEvent.getType()) {
+    return false;
+  }
+  if (requireSameSize) {
+    if (currentEvent.getSize() != soughtEvent.getSize()) {
+      return false;
+    }
+  }
+  return (currentEvent.getCoordinate().getDistanceBetween(soughtEvent.getCoordinate()) < differenceDefiningDistance);
+}
+
+void transformFile(const std::string& nameOfComparedFile, const std::string& nameOfComparisonFile, 
+    int wiggleRoom, bool requireIdenticalLengths, const std::string& nameOfOutputFile) {
   std::ifstream comparedFile(nameOfComparedFile.c_str());
   std::ifstream comparisonFile(nameOfComparisonFile.c_str());
   std::ofstream outputFile(nameOfOutputFile.c_str());
@@ -343,10 +277,7 @@ void transformFile(const std::string& nameOfComparedFile, const std::string& nam
     std::vector<Event>::iterator bestEventIt = firstEventToSearch;
     int minDistance = wiggleRoom;
     while (eventToSearch->getCoordinate().withinDistance(currentEvent.getCoordinate(), wiggleRoom)) {
-      if (eventToSearch->getType() == currentEvent.getType() && 
-          //eventToSearch->getSize() == currentEvent.getSize() &&
-          eventToSearch->getCoordinate().getDistanceBetween(currentEvent.getCoordinate()) < minDistance
-          ) {
+      if (sufficientlySimilar(*eventToSearch, currentEvent, wiggleRoom, requireIdenticalLengths)) {
          bestEventIt = eventToSearch;
          minDistance = eventToSearch->getCoordinate().getDistanceBetween(currentEvent.getCoordinate());
       } // if this event is a better match
@@ -362,17 +293,35 @@ void transformFile(const std::string& nameOfComparedFile, const std::string& nam
   outputFile.close();
 }
 
+bool argumentsCorrect(int argc, char** argv) {
+  if (argc != 6) {
+    return false;
+  }
+  if (atoi(argv[3]) == 0) {
+    // wiggle room cannot be 0 or a string
+    return false;
+  }
+  std::string lengthConsideration = argv[4];
+  if (lengthConsideration != "same_len" && lengthConsideration != "ignore_len") {
+    return false;
+  }
+  return true;
+}
+
 
 int main(int argc, char** argv) {
-  if (argc != 5) {
+  if (!argumentsCorrect(argc,argv)) {
     std::cout <<
       "vcf_compare\n"
       "\n"
       "Purpose: finds all events in the first file that are represented by a similar event "
-      "(similar location, same SV-length) in the second file.\n"
+      "(similar location, same or similar SV-length) in the second file. Additional arguments "
+      "indicate what difference in location is considered similar enough (or rather: which is "
+      "the minimum distance at which events are considered dissimilar), and whether one should "
+      "ignore SV lengths in the comparison ('same_len' or 'ignore_len').\n" 
       "\n"
-      "Usage: ./compare first_vcf second_vcf wiggle_room_bp merged_vcf\n"
-      "Example: ./compare pacbio_deletions.vcf freebayes_deletions.vcf 10 pacbio_del_found_by_freebayes.vcf\n"
+      "Usage: ./compare first_vcf second_vcf wiggle_room_bp whether_compare_lengths merged_vcf\n"
+      "Example: ./compare pacbio_deletions.vcf freebayes_deletions.vcf 10 same_len pacbio_del_found_by_freebayes.vcf\n"
       "\n"
       "Contact data: Eric-Wubbo Lameijer, Xi'an Jiaotong University, eric_wubbo@hotmail.com\n\n";
     return -1;
@@ -380,8 +329,10 @@ int main(int argc, char** argv) {
     std::string nameOfFirstInputFile = argv[1];
     std::string nameOfSecondInputFile = argv[2];
     int wiggleRoom = atoi(argv[3]);
-    std::string nameOfOutputFile = argv[4];
-    transformFile(nameOfFirstInputFile, nameOfSecondInputFile, wiggleRoom, nameOfOutputFile);
+    std::string lengthConsideration = argv[4];
+    bool requireIdenticalLengths = (lengthConsideration == "same_len");
+    std::string nameOfOutputFile = argv[5];
+    transformFile(nameOfFirstInputFile, nameOfSecondInputFile, wiggleRoom, requireIdenticalLengths, nameOfOutputFile);
     return 0;
   }
 }

@@ -3,6 +3,7 @@ compare
 del_corr
 eventizer
 filter_events
+filter_eventtypes
 find_duplicates
 find_mlma
 find_uncrowded
