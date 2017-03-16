@@ -70,9 +70,6 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
       std::cout << "Chromosome: " << chrom << std::endl;
     }
     
-    if (chrom == oldChrom && pos == oldPos) {
-       std::cout << chrom << ":" << pos << std::endl;
-    }
     oldChrom = chrom;
     oldPos = pos;
 
@@ -92,13 +89,22 @@ void transformFile(const std::string& nameOfInputFile, const std::string& nameOf
        buffer_ss >> dummy;
     }
 
-    std::string genotype;
-    buffer_ss >> genotype;
+    bool isValidLine = false;
+    while (buffer_ss) {
+      std::string genotype;
+      buffer_ss >> genotype;
+      if (genotype.length() == 0) {
+        break;
+      }
     
-    if (StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,".")) {
-      std::cout << genotype << "\n";
-    } else {
+      if (!(StringStartsWith(genotype,"0/0") || StringStartsWith(genotype,"."))) {
+        isValidLine = true;
+      }
+    }
+    if (isValidLine) {
       outputFile << line << "\n";
+    } else {
+      std::cout << line << "\n";
     }
   }     
   inputFile.close();
