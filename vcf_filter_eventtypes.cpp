@@ -16,7 +16,7 @@
 #include <sstream>
 #include <string>
 
-enum EventType {SNP, INS, DEL, ALL};
+enum EventType {SNP, INS, DEL, ALL, INDEL};
 
 EventType stringToEventType(const std::string& eventTypeAsString) {
   if (eventTypeAsString == "SNP") {
@@ -27,6 +27,8 @@ EventType stringToEventType(const std::string& eventTypeAsString) {
     return DEL;
   } else if (eventTypeAsString == "ALL") {
     return ALL;
+  } else if (eventTypeAsString == "INDEL") {
+    return INDEL;
   } else {
     std::cerr << eventTypeAsString << " is not recognized as an eventtype." << std::endl;
     exit(-1);
@@ -50,7 +52,9 @@ bool isPureDeletion(const std::string& ref, const std::string& alt) {
 }
 
 int changeInSize(const std::string& ref, const std::string& alt) {
-  return abs(ref.length() - alt.length());
+  int refLength = ref.length();
+  int altLength = alt.length();
+  return abs(refLength - altLength);
 }
 
 bool isHomopolymer(const std::string& ref, const std::string& alt) {
@@ -79,6 +83,8 @@ bool isEventType(const std::string& ref, const std::string& alt, EventType event
     return isPureDeletion(ref, alt);
   } else if (eventType == INS) {
     return isPureInsertion(ref, alt);
+  } else if (eventType == INDEL) {
+    return (isPureInsertion(ref, alt) || isPureDeletion(ref,alt));
   } else {
     std::cerr << "unknown eventtype!" << std::endl;
     return false;
@@ -135,7 +141,7 @@ bool commandLineArgumentsValid(int argc, char** argv) {
     return false;
   }
   std::string eventType = argv[4];
-  if (eventType != "SNP" && eventType != "INS" && eventType != "DEL" && eventType != "ALL") {
+  if (eventType != "SNP" && eventType != "INS" && eventType != "DEL" && eventType != "ALL" && eventType != "INDEL") {
     return false;
   }
   return true;
@@ -148,7 +154,7 @@ int main(int argc, char** argv) {
       "filter_eventtypes\n"
       "\n"
       "Purpose: does some basic filtering, like only keeping events with a certain "
-      "min length, max length, or event type (INS/DEL/SNP/ALL)\n"
+      "min length, max length, or event type (INS/DEL/SNP/ALL/INDEL)\n"
       "\n"
       "Usage: ./filter_eventtypes input_vcf min_size max_size event_type output_vcf\n"
       "Example: ./filter_eventtypes pacbio_hanchild.vcf 1 1000 ALL pacbio_hanchild_maxsize1000.vcf\n"
