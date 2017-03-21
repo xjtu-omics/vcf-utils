@@ -16,7 +16,7 @@ remove_double_alts
 remove_events
 remove_homref
 size_ass
-sort
+sort_vcf
 standardize
 unravel_alts
 uniquify

@@ -18,7 +18,7 @@ g++ vcf_remove_double_alts.cpp -o remove_double_alts
 g++ vcf_remove_events.cpp -o remove_events
 g++ vcf_remove_homref.cpp -o remove_homref
 g++ vcf_size_assessor.cpp -o size_ass
-g++ vcf_sort.cpp shared_functions.cpp event.cpp -o sort
+g++ vcf_sort.cpp shared_functions.cpp event.cpp -o sort_vcf
 g++ vcf_standardizer.cpp -o standardize
 g++ vcf_uniquify.cpp -o uniquify
 g++ vcf_uniquify_loci.cpp -o uniquify_loci
